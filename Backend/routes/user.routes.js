@@ -17,10 +17,19 @@ router.post('/register',[
   
 
 
-
     
 )
 
+router.post('/login',[  
+    body('email').isEmail().withMessage('give a valid email'),
+    body('password').isLength({min:3}).withMessage('give a bigger password'),
+
+],usercontroller.loginuser
+  
+)
+
+
+router
 
 
 
