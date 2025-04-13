@@ -6,6 +6,8 @@ const {body}=require('express-validator');
 
 const usercontroller=require('../controller/user.controller');
 
+const authmiddleware=require('../middleware/auth.middleware')
+
 
 router.post('/register',[
     body('fullname.firstname').isLength({min:3}).withMessage('give a bigger first name'),
@@ -29,7 +31,9 @@ router.post('/login',[
 )
 
 
-router
+router.get('/profile',authmiddleware.authuser,usercontroller.getuserprofile)
+
+router.get('/logout',authmiddleware.authuser,usercontroller.logoutuser)
 
 
 

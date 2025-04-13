@@ -9,6 +9,9 @@ This is the backend API for the Uber Clone application. It provides endpoints fo
 - [Setup Instructions](#setup-instructions)
 - [API Endpoints](#api-endpoints)
   - [POST /register](#post-register)
+  - [POST /login](#post-login)
+  - [GET /profile](#get-profile)
+  - [GET /logout](#get-logout)
 - [Error Handling](#error-handling)
 - [License](#license)
 
@@ -121,10 +124,137 @@ This is the backend API for the Uber Clone application. It provides endpoints fo
 
 ---
 
+### POST /login
+
+**Description**: Authenticates an existing user.
+
+**URL**: `/login`
+
+**Method**: `POST`
+
+**Request Body**:
+```json
+{
+    "email": "test@gmail.com",
+    "password": "test_1234"
+}
+```
+
+**Validation Rules**:
+- `email`: Must be a valid email address.
+- `password`: Must be at least 3 characters long.
+
+**Response**:
+- **Success (200)**:
+  ```json
+  {
+      "token": "your_generated_jwt_token",
+      "user": {
+          "_id": "user_id",
+          "fullname": {
+              "firstname": "test_firstname",
+              "lastname": "test_lastname"
+          },
+          "email": "test@gmail.com",
+          "socketID": null
+      }
+  }
+  ```
+- **Invalid Credentials (401)**:
+  ```json
+  {
+      "message": "invalid email or password"
+  }
+  ```
+- **Validation Error (400)**:
+  ```json
+  {
+      "errors": [
+          {
+              "msg": "give a valid email",
+              "param": "email",
+              "location": "body"
+          }
+      ]
+  }
+  ```
+
+**Notes**:
+- The login endpoint verifies the provided email and password.
+- A JWT token is generated upon successful authentication.
+- The user’s password is not returned in the response.
+
+---
+
+### GET /profile
+
+**Description**: Retrieves the profile of the authenticated user.
+
+**URL**: `/profile`
+
+**Method**: `GET`
+
+**Headers**:
+- Requires the JWT token to be provided either in a cookie or the `Authorization` header.
+
+**Response**:
+- **Success (200)**:
+  ```json
+  {
+      "_id": "user_id",
+      "fullname": {
+          "firstname": "test_firstname",
+          "lastname": "test_lastname"
+      },
+      "email": "test@gmail.com",
+      "socketID": null
+  }
+  ```
+- **Unauthorized (401)**:
+  ```json
+  {
+      "message": "unauthorized"
+  }
+  ```
+
+---
+
+### GET /logout
+
+**Description**: Logs out the user by clearing the authentication cookie and blacklisting the token.
+
+**URL**: `/logout`
+
+**Method**: `GET`
+
+**Behavior**:
+- Clears the `token` cookie.
+- Adds the token to the blacklist to prevent further use.
+
+**Response**:
+- **Success (200)**:
+  ```json
+  {
+      "message": "logged out successfully"
+  }
+  ```
+- **Unauthorized (401)**:
+  ```json
+  {
+      "message": "unauthorized"
+  }
+  ```
+
+**Notes**:
+- After logging out, attempts to access protected endpoints (i.e., `/profile`) with the blacklisted token will result in an unauthorized error.
+
+---
+
 ## Error Handling
 
 The API uses consistent error handling to provide meaningful error messages to the client. Common error responses include:
 - **400 Bad Request**: Validation errors or missing fields.
+- **401 Unauthorized**: Invalid authentication credentials or unauthorized access.
 - **500 Internal Server Error**: Unexpected server errors.
 
 ---
