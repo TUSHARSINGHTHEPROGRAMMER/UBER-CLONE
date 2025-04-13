@@ -8,6 +8,7 @@ const cors= require('cors');
 
 
 const userRoutes=require('./routes/user.routes');
+const driverroutes=require('./routes/driver.routes')
 const express= require('express');
 
 const cookieparser=require('cookie-parser');
@@ -27,7 +28,10 @@ app.get('/',(req,res)=>{
 });
 
 
+
 app.use('/users',userRoutes);
+
+app.use('/driver',driverroutes)
 
 
 
